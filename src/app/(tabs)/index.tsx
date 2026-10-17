@@ -2,11 +2,13 @@ import { colors } from "@/constants/colors";
 import { posterUrl, searchMovies } from "@/lib/tmdb";
 import { TmdbMovie } from "@/types/movie";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
     Image,
+    Pressable,
     StyleSheet,
     Text,
     TextInput,
@@ -15,6 +17,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SearchScreen() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<TmdbMovie[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,7 +64,12 @@ export default function SearchScreen() {
         renderItem={({ item }) => {
           const uri = posterUrl(item.poster_path);
           return (
-            <View style={styles.row}>
+            <Pressable
+                style={styles.row}
+                onPress={() =>
+                    router.push({ pathname: "/movie/[id]", params: { id: item.id.toString() } })
+                }
+                >
               {uri ? (
                 <Image source={{ uri }} style={styles.poster} />
               ) : (
@@ -75,7 +83,7 @@ export default function SearchScreen() {
                   {item.release_date ? item.release_date.slice(0, 4) : "公開年不明"}
                 </Text>
               </View>
-            </View>
+            </Pressable>
           );
         }}
       />
