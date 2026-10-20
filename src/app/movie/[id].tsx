@@ -1,6 +1,7 @@
 import { colors } from "@/constants/colors";
+import { useMovies } from "@/context/MovieContext";
 import { getMovieDetail, posterUrl } from "@/lib/tmdb";
-import { TmdbMovieDetail } from "@/types/movie";
+import { TmdbMovieDetail, WatchStatus } from "@/types/movie";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -15,10 +16,17 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+const STATUS_OPTIONS: { value: WatchStatus; label: string }[] = [
+  { value: "watched", label: "観た" },
+  { value: "want", label: "観たい" },
+  { value: "watching", label: "観てる" },
+];
+
 export default function MovieDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { getMovie, setStatus, removeMovie } = useMovies();
 
   const [movie, setMovie] = useState<TmdbMovieDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +66,19 @@ export default function MovieDetailScreen() {
   const poster = posterUrl(movie.poster_path, "w342");
   const year = movie.release_date ? movie.release_date.slice(0, 4) : "公開年不明";
   const runtime = movie.runtime ? ` · ${movie.runtime}分` : "";
+  const saved = getMovie(movie.id);
+
+  const handleStatus = (status: WatchStatus) => {
+    // 同じボタンをもう一度押したら登録解除
+    if (saved?.status === status) {
+      removeMovie(movie.id);
+      return;
+    }
+    setStatus(
+      { id: movie.id, title: movie.title, posterPath: movie.poster_path },
+      status
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -88,6 +109,23 @@ export default function MovieDetailScreen() {
               ))}
             </View>
           </View>
+        </View>
+
+        <View style={styles.statusRow}>
+          {STATUS_OPTIONS.map((opt) => {
+            const active = saved?.status === opt.value;
+            return (
+              <Pressable
+                key={opt.value}
+                onPress={() => handleStatus(opt.value)}
+                style={[styles.statusButton, active && styles.statusButtonActive]}
+              >
+                <Text style={[styles.statusText, active && styles.statusTextActive]}>
+                  {opt.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         <View style={styles.section}>
@@ -194,5 +232,32 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",
+  },
+  statusRow: {
+    flexDirection: "row",
+    gap: 8,
+    paddingHorizontal: 20,
+    marginTop: 20,
+  },
+  statusButton: {
+    flex: 1,
+    height: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.starOff,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statusButtonActive: {
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
+  },
+  statusText: {
+    color: colors.textSub,
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  statusTextActive: {
+    color: "#FFFFFF",
   },
 });
