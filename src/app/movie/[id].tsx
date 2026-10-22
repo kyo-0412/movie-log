@@ -1,3 +1,4 @@
+import { Stars } from "@/components/Stars";
 import { colors } from "@/constants/colors";
 import { useMovies } from "@/context/MovieContext";
 import { getMovieDetail, posterUrl } from "@/lib/tmdb";
@@ -67,6 +68,7 @@ export default function MovieDetailScreen() {
   const year = movie.release_date ? movie.release_date.slice(0, 4) : "公開年不明";
   const runtime = movie.runtime ? ` · ${movie.runtime}分` : "";
   const saved = getMovie(movie.id);
+  const hasRecord = !!(saved?.rating || saved?.watchedAt || saved?.memo);
 
   const handleStatus = (status: WatchStatus) => {
     // 同じボタンをもう一度押したら登録解除
@@ -127,6 +129,39 @@ export default function MovieDetailScreen() {
             );
           })}
         </View>
+
+        {saved && (
+          <View style={styles.recordCard}>
+            <View style={styles.recordHeader}>
+              <Text style={styles.recordLabel}>あなたの記録</Text>
+              <Pressable
+                style={styles.recordButton}
+                onPress={() =>
+                  router.push({ pathname: "/record/[id]", params: { id: movie.id.toString() } })
+                }
+              >
+                <Text style={styles.recordButtonText}>
+                  {hasRecord ? "記録を編集" : "記録する"}
+                </Text>
+              </Pressable>
+            </View>
+            {hasRecord ? (
+              <View style={styles.recordBody}>
+                <Stars rating={saved.rating} size={18} />
+                {saved.watchedAt ? (
+                  <Text style={styles.meta}>観た日 {saved.watchedAt}</Text>
+                ) : null}
+                {saved.memo ? (
+                  <Text style={styles.recordMemo} numberOfLines={3}>
+                    {saved.memo}
+                  </Text>
+                ) : null}
+              </View>
+            ) : (
+              <Text style={styles.meta}>評価や感想を残しておきましょう</Text>
+            )}
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>あらすじ</Text>
@@ -259,5 +294,44 @@ const styles = StyleSheet.create({
   },
   statusTextActive: {
     color: "#FFFFFF",
+  },
+  recordCard: {
+    marginHorizontal: 20,
+    marginTop: 16,
+    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    gap: 10,
+  },
+  recordHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  recordLabel: {
+    color: colors.textSub,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  recordButton: {
+    height: 36,
+    paddingHorizontal: 14,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.accent,
+    justifyContent: "center",
+  },
+  recordButtonText: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  recordBody: {
+    gap: 6,
+  },
+  recordMemo: {
+    color: colors.text,
+    fontSize: 14,
+    lineHeight: 22,
   },
 });

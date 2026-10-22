@@ -1,3 +1,4 @@
+import { Stars } from "@/components/Stars";
 import { colors } from "@/constants/colors";
 import { useMovies } from "@/context/MovieContext";
 import { posterUrl } from "@/lib/tmdb";
@@ -29,21 +30,21 @@ const H_PADDING = 20;
 const GAP = 12;
 
 // ★評価の表示（評価がなければ何も出さない）
-function Stars({ rating, size }: { rating?: number; size: number }) {
-  if (!rating) return null;
-  return (
-    <View style={styles.stars}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Ionicons
-          key={i}
-          name="star"
-          size={size}
-          color={i <= rating ? colors.accent : colors.starOff}
-        />
-      ))}
-    </View>
-  );
-}
+// function Stars({ rating, size }: { rating?: number; size: number }) {
+//   if (!rating) return null;
+//   return (
+//     <View style={styles.stars}>
+//       {[1, 2, 3, 4, 5].map((i) => (
+//         <Ionicons
+//           key={i}
+//           name="star"
+//           size={size}
+//           color={i <= rating ? colors.accent : colors.starOff}
+//         />
+//       ))}
+//     </View>
+//   );
+// }
 
 export default function MyListScreen() {
   const router = useRouter();
@@ -295,10 +296,10 @@ const styles = StyleSheet.create({
   noPoster: {
     backgroundColor: colors.surface,
   },
-  stars: {
-    flexDirection: "row",
-    gap: 2,
-  },
+  // stars: {
+  //   flexDirection: "row",
+  //   gap: 2,
+  // },
   empty: {
     alignItems: "center",
     gap: 16,
