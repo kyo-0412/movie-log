@@ -8,6 +8,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -69,11 +70,26 @@ export default function MovieDetailScreen() {
   const runtime = movie.runtime ? ` · ${movie.runtime}分` : "";
   const saved = getMovie(movie.id);
   const hasRecord = !!(saved?.rating || saved?.watchedAt || saved?.memo);
+  // 登録解除の確認ダイアログ
+  const confirmRemove = () => {
+    const message = hasRecord
+      ? "評価・観た日・感想メモも削除されます。"
+      : undefined;
+
+    Alert.alert("マイリストから外しますか？", message, [
+      { text: "キャンセル", style: "cancel" },
+      {
+        text: "外す",
+        style: "destructive",
+        onPress: () => removeMovie(movie.id),
+      },
+    ]);
+  };
 
   const handleStatus = (status: WatchStatus) => {
     // 同じボタンをもう一度押したら登録解除
     if (saved?.status === status) {
-      removeMovie(movie.id);
+      confirmRemove();
       return;
     }
     setStatus(
