@@ -15,6 +15,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="record/[id]" options={{ presentation: "modal" }} />
+        <Stack.Screen name="about" options={{ presentation: "modal" }} />
       </Stack>
     </MovieProvider>
   );

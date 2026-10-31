@@ -5,14 +5,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -39,7 +39,16 @@ export default function SearchScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <Text style={styles.title}>検索</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>検索</Text>
+        <Pressable
+          onPress={() => router.push("/about")}
+          accessibilityLabel="アプリについて"
+          style={styles.infoButton}
+        >
+          <Ionicons name="information-circle-outline" size={26} color={colors.textMuted} />
+        </Pressable>
+      </View>
 
       <View style={styles.searchBox}>
         <Ionicons name="search" size={20} color={colors.textMuted} />
@@ -97,12 +106,23 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     paddingHorizontal: 20,
   },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 16,
+    marginBottom: 16,
+  },
   title: {
     color: colors.text,
     fontSize: 28,
     fontWeight: "900",
-    marginTop: 16,
-    marginBottom: 16,
+  },
+  infoButton: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   searchBox: {
     flexDirection: "row",
